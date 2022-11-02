@@ -8,7 +8,7 @@ import numpy as np
 import pint
 import pytest
 
-from dxtbx.nexus import nxmx
+import nxmx
 
 
 def test_nxentry(nxmx_example):
