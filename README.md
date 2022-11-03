@@ -1,5 +1,9 @@
 # Read NXmx-flavour NeXus HDF5 data in Python
 
+[![PyPI release](https://img.shields.io/pypi/v/nxmx.svg)](https://pypi.python.org/pypi/nxmx)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/nxmx.svg)](https://pypi.org/project/nxmx)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)]( https://github.com/ambv/black)
+
 This package provides a neat and tidy Python interface for reading data from [HDF5 files](https://www.hdfgroup.org/solutions/hdf5/) that are structured according to the [NXmx application definition](https://manual.nexusformat.org/classes/applications/NXmx.html) of the [NeXus standard](https://www.nexusformat.org/).
 
 ## Installation
