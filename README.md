@@ -5,7 +5,7 @@ This package provides a neat and tidy Python interface for reading data from [HD
 ## Installation
 `python-nxmx` is available as `nxmx` on PyPI, so you just need Pip.
 ```Bash
-pip install nxmx
+$ pip install nxmx
 ```
 
 ## Getting started
