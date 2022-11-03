@@ -20,5 +20,8 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[tool.setuptools.package-data]
+nxmx = ["py.typed"]
+
 [tool.setuptools_scm]
 write_to = "src/nxmx/_version.py"
