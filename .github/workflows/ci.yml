@@ -4,59 +4,18 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        os: ["ubuntu", "macos", "windows"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip' # caching pip dependencies
+    - run: pip install -r requirements_dev.txt
 
-      - name: Setup Mambaforge
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          miniforge-variant: Mambaforge
-          miniforge-version: latest
-          activate-environment: anaconda-client-env
-          use-mamba: true
-          channel-priority: strict
-          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
-
-      - name: Get Date
-        id: get-date
-        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Conda env
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs
-          key:
-            conda-${{ runner.os }}-${{ runner.arch }}-${{
-            steps.get-date.outputs.today }}-${{
-            hashFiles('requirements_dev.txt') }}-${{
-            env.CACHE_NUMBER }}
-        env:
-          # Increase this value to reset cache if etc/example-environment.yml has not changed
-          CACHE_NUMBER: 0
-        id: cache
-
-      - name: Update environment
-        run:
-          mamba env update -n anaconda-client-env -f requirements_dev.txt
-        if: steps.cache.outputs.cache-hit != 'true'
-
-      - shell: bash -el {0}
-        run: |
-          conda info
-          conda list
-
-      - name: Install nxmx
-        shell: bash -el {0}
-        run: |
-          pip install -e .
-
-      - name: Run pytest
-        shell: bash -el {0}
-        run: |
-            pytest -vs --regression
+    - name: Run pytest
+      run: pytest -vs
