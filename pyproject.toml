@@ -25,3 +25,4 @@ nxmx = ["py.typed"]
 
 [tool.setuptools_scm]
 write_to = "src/nxmx/_version.py"
+local_scheme = "no-local-version"
