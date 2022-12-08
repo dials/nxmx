@@ -1,0 +1,23 @@
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.8', '3.9', '3.10']
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip' # caching pip dependencies
+    - run: pip install -r requirements_dev.txt
+    - name: Install nxmx
+      run: pip install .
+    - name: Run pytest
+      run: pytest -vs
