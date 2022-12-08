@@ -17,6 +17,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements_dev.txt
-
+    - name: Install nxmx
+      run: pip install .
     - name: Run pytest
       run: pytest -vs
