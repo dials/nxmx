@@ -343,6 +343,30 @@ def test_get_dependency_chain_detector(detector_depends_on_example):
     )
 
 
+def test_nx_transformations_axis_with_string_data():
+    with h5py.File(" ", "w", **pytest.h5_in_memory) as f:
+        transformations = f.create_group("/entry/instrument/detector/transformations")
+        det_z = transformations.create_dataset(
+            "det_z", data=np.array([b"150"], dtype=object)
+        )
+        det_z.attrs["depends_on"] = b"."
+        det_z.attrs["transformation_type"] = b"translation"
+        det_z.attrs["units"] = b"mm"
+        det_z.attrs["vector"] = np.array([0.0, 0.0, 1.0])
+        axis = nxmx.NXtransformationsAxis(det_z)
+        assert np.allclose(
+            axis.matrix,
+            [
+                [
+                    [1.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 150.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ]
+            ],
+        )
+
+
 def test_get_cumulative_transformation(nxmx_example):
     sample = nxmx.NXmx(nxmx_example).entries[0].samples[0]
     dependency_chain = nxmx.get_dependency_chain(sample.depends_on)

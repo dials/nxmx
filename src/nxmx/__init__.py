@@ -469,6 +469,7 @@ class NXtransformationsAxis:
             )
         else:
             values = values.magnitude
+        values = values.astype(float, copy=False)
 
         if self.transformation_type == "rotation":
             R = Rotation.from_rotvec(values[:, np.newaxis] * self.vector).as_matrix()
