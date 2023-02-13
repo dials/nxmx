@@ -1,28 +1,28 @@
 [build-system]
-requires = ["setuptools>=61", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61", "setuptools-scm"]
 
 [project]
-name = "nxmx"
-description = "Read HDF5 data conforming to the NXmx application definition of the NeXus format"
-readme = "README.md"
-requires-python = ">=3.8"
-keywords = ["NeXus", "NXmx"]
-license = {text = "BSD 3-Clause License"}
 classifiers = [
-    "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3"
 ]
 dependencies = [
-    "h5py",
-    "pint",
-    "python-dateutil",
-    "scipy",
+  "h5py",
+  "pint",
+  "python-dateutil",
+  "scipy"
 ]
+description = "Read HDF5 data conforming to the NXmx application definition of the NeXus format"
 dynamic = ["version"]
+keywords = ["NeXus", "NXmx"]
+license = {text = "BSD 3-Clause License"}
+name = "nxmx"
+readme = "README.md"
+requires-python = ">=3.8"
 
 [tool.setuptools.package-data]
 nxmx = ["py.typed"]
 
 [tool.setuptools_scm]
-write_to = "src/nxmx/_version.py"
 local_scheme = "no-local-version"
+write_to = "src/nxmx/_version.py"
