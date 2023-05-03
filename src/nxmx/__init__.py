@@ -843,6 +843,14 @@ class NXdetector(H5Mapping):
             return int(self._handle["bit_depth_readout"][()])
         return None
 
+    # https://www.dectris.com/support/downloads/header-docs/nexus/
+    @cached_property
+    def bit_depth_image(self) -> int | None:
+        """How many bits are saved per pixel to file (nonstandard)."""
+        if "bit_depth_image" in self._handle:
+            return int(self._handle["bit_depth_image"][()])
+        return None
+
     @cached_property
     def sensor_material(self) -> str:
         """The name of the material a detector sensor is constructed from.
