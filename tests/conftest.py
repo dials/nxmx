@@ -60,6 +60,7 @@ def nxmx_example():
         detector["frame_time"] = 0.1
         detector["frame_time"].attrs["units"] = "s"
         detector["bit_depth_readout"] = np.array(32)
+        detector["bit_depth_image"] = np.array(32)
 
         detector_transformations = detector.create_group("transformations")
         detector_transformations.attrs["NX_class"] = "NXtransformations"
