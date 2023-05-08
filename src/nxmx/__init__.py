@@ -836,6 +836,18 @@ class NXdetector(H5Mapping):
             return self._handle["pixel_mask"][()]
         return None
 
+    def pixel_mask_single(self, index: int = None) -> NXIntT | None:
+        if index is None:
+            return self.pixel_mask
+        if hasattr(self, "mask_cache") and self.mask_cache["index"] == index:
+            return self.mask_cache["mask"]
+        if "pixel_mask" in self._handle:
+            result = self._handle["pixel_mask"][index]
+        else:
+            result = None
+        self.mask_cache = {"index": index, "mask": result}
+        return result
+
     @cached_property
     def bit_depth_readout(self) -> int | None:
         """How many bits the electronics record per pixel (recommended)."""
