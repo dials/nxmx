@@ -146,6 +146,7 @@ def nx_detector(request):
         distance.attrs["units"] = "m"
 
         detector.create_dataset("pixel_mask_applied", data=False, shape=shape)
+        detector.create_dataset("pixel_mask", data=np.zeros((2, 100, 200)))
 
         detector.create_dataset("saturation_value", data=12345, shape=shape)
 
@@ -171,6 +172,15 @@ def test_nxmx_single_value_properties(nx_detector):
         assert nx_detector.pixel_mask_applied is False
         assert nx_detector.saturation_value == 12345
         assert nx_detector.serial_number == "ABCDE"
+
+
+def test_nxdetector_pixel_mask(nx_detector):
+    with nx_detector as f:
+        nx_detector = nxmx.NXmx(f).entries[0].instruments[0].detectors[0]
+        assert isinstance(nx_detector.pixel_mask, h5py.Dataset)
+        assert nx_detector.pixel_mask.shape == (2, 100, 200)
+        assert nx_detector.pixel_mask[0].shape == (100, 200)
+        assert nx_detector.pixel_mask[1].shape == (100, 200)
 
 
 def test_get_rotation_axes(nxmx_example):

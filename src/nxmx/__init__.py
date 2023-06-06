@@ -792,7 +792,7 @@ class NXdetector(H5Mapping):
         return None
 
     @cached_property
-    def pixel_mask(self) -> NXIntT | None:
+    def pixel_mask(self) -> h5py.Dataset | None:
         """The 32-bit pixel mask for the detector.
 
         Can be either one mask for the whole dataset (i.e. an array with indices i, j)
@@ -832,9 +832,7 @@ class NXdetector(H5Mapping):
 
         If provided, it is recommended that it be compressed.
         """
-        if "pixel_mask" in self._handle:
-            return self._handle["pixel_mask"][()]
-        return None
+        return self._handle.get("pixel_mask")
 
     @cached_property
     def bit_depth_readout(self) -> int | None:
