@@ -25,3 +25,6 @@ jobs:
     name: "CI Successful"
     needs: [build]
     runs-on: ubuntu-latest
+    steps:
+    - name: Nothing
+      run: "true"
