@@ -21,6 +21,7 @@ jobs:
       run: pip install .
     - name: Run pytest
       run: pytest -vs
-    post_build:
-      name: "CI Successful"
-      needs: [build]
+  post_build:
+    name: "CI Successful"
+    needs: [build]
+    runs-on: ubuntu-latest
