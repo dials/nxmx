@@ -231,6 +231,53 @@ class NXdata(H5Mapping):
         """
         return self._handle.attrs.get("signal")
 
+    @cached_property
+    def data_scale_factor(self) -> str | None:
+        """
+        An optional scaling factor to apply to the values in ``data``.
+
+        The elements in ``data`` are often stored as integers for efficiency reasons and need
+        further correction, generating floats.  The two fields data_scaling_factor and
+        data_offset allow linear corrections using the following convention:
+
+        .. code-block::
+
+                corrected_data = (data + offset) * scaling_factor
+
+        This formula will derive the corrected value, when necessary.
+
+        data_scaling_factor is sometimes known as gain and data_offset is sometimes
+        known as pedestal or background, depending on the community.
+
+        Use these fields to specify constants that need to be applied
+        to the data to correct it to physical values.  For example, if the detector gain
+        is 10 counts per photon and a constant background of 400 needs to be subtracted
+        off the pixels, specify data_scaling_factor as 0.1 and data_offset as -400 to
+        specify the required conversion from raw counts to corrected photons. It
+        is implied processing software will apply these corrections on-the-fly during processing.
+
+        The rank of these fields should either be a single value for the full dataset, a
+        single per-pixel array applied to every image (dimensions (i, j) or (i, j, k)),
+        or a per-image correction specified with an array whose slowest rank is nP (dimensions
+        (np, 1), (np, i, j) or (np, i, j, k)).
+
+        When omitted, the scaling factor is assumed to be 1.
+        """
+        if "data_scale_factor" in self._handle:
+            return self._handle["data_scale_factor"][()]
+
+
+    @cached_property
+    def data_offset(self) -> str | None:
+        """
+        An optional offset to apply to the values in data.
+
+        When omitted, the offset is assumed to be 0.
+        """
+        if "data_offset" in self._handle:
+            return self._handle["data_offset"][()]
+
+
 
 class NXtransformations(H5Mapping):
     """Collection of axis-based translations and rotations to describe a geometry.
