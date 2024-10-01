@@ -8,8 +8,9 @@ flexparser==0.3.1
     # via pint
 h5py==3.12.1
     # via nxmx (pyproject.toml)
-numpy==2.1.1
+numpy==1.26.4
     # via
+    #   nxmx (pyproject.toml)
     #   h5py
     #   scipy
 pint==0.24.3
