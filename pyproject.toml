@@ -3,15 +3,8 @@ build-backend = "setuptools.build_meta"
 requires = ["setuptools>=61", "setuptools-scm"]
 
 [project]
-classifiers = [
-  "Programming Language :: Python :: 3"
-]
-dependencies = [
-  "h5py",
-  "pint",
-  "python-dateutil",
-  "scipy"
-]
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = ["h5py", "pint", "python-dateutil", "scipy"]
 description = "Read HDF5 data conforming to the NXmx application definition of the NeXus format"
 dynamic = ["version"]
 keywords = ["NeXus", "NXmx"]
@@ -19,6 +12,10 @@ license = {text = "BSD 3-Clause License"}
 name = "nxmx"
 readme = "README.md"
 requires-python = ">=3.9"
+
+[tool.ruff.lint]
+ignore = ["E501"]
+select = ["E", "F", "UP", "W", "I", "C"]
 
 [tool.setuptools.package-data]
 nxmx = ["py.typed"]
