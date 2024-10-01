@@ -263,9 +263,9 @@ def detector_depends_on_example(request):
             "fast_pixel_direction", data=7.5e-5
         )
         fast_pixel_direction.attrs["transformation_type"] = "translation"
-        fast_pixel_direction.attrs[
-            "depends_on"
-        ] = "/entry/instrument/detector/module/module_offset"
+        fast_pixel_direction.attrs["depends_on"] = (
+            "/entry/instrument/detector/module/module_offset"
+        )
         fast_pixel_direction.attrs["vector"] = np.array([-1.0, 0.0, 0.0])
         fast_pixel_direction.attrs["offset"] = np.array([0.0, 0.0, 0.0])
         fast_pixel_direction.attrs["offset_units"] = "m"
@@ -274,13 +274,13 @@ def detector_depends_on_example(request):
         module_offset = module.create_dataset("module_offset", data=0)
         module_offset.attrs["transformation_type"] = "translation"
         if request.param:
-            module_offset.attrs[
-                "depends_on"
-            ] = "/entry/instrument/detector/transformations/det_z_tune"
+            module_offset.attrs["depends_on"] = (
+                "/entry/instrument/detector/transformations/det_z_tune"
+            )
         else:
-            module_offset.attrs[
-                "depends_on"
-            ] = "/entry/instrument/detector/transformations/det_z"
+            module_offset.attrs["depends_on"] = (
+                "/entry/instrument/detector/transformations/det_z"
+            )
         module_offset.attrs["vector"] = np.array([1.0, 0.0, 0.0])
         module_offset.attrs["offset"] = np.array([0.155985, 0.166904, -0])
         module_offset.attrs["offset_units"] = "m"
@@ -291,9 +291,9 @@ def detector_depends_on_example(request):
             det_z_tune = transformations.create_dataset(
                 "det_z_tune", data=np.array([-0.5])
             )
-            det_z_tune.attrs[
-                "depends_on"
-            ] = b"/entry/instrument/detector/transformations/det_z"
+            det_z_tune.attrs["depends_on"] = (
+                b"/entry/instrument/detector/transformations/det_z"
+            )
             det_z_tune.attrs["transformation_type"] = b"translation"
             det_z_tune.attrs["units"] = b"mm"
             det_z_tune.attrs["vector"] = np.array([0.0, 0.0, 1.0])

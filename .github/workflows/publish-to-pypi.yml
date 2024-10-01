@@ -1,34 +1,72 @@
-name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+name: Build and Test
 
 on: push
 
 jobs:
-  build-n-publish:
-    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@master
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
-    - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
-    - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
-        .
-    - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.ref, 'refs/tags')
+        python-version: 3.11
+    - name: Install Build
+      run: |
+        python -mpip install --upgrade pip
+        pip install build
+    - name: Build distribution
+      run: |
+        python -mbuild
+        pip install dist/*.whl
+    - uses: actions/upload-artifact@v3
+      with:
+        path: ./dist/*
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v3
+      with:
+        name: artifact
+        path: dist
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest dist/*.whl -r requirements.txt -r requirements_dev.txt pytest-md pytest-emoji
+    - name: Run pytest
+      uses: pavelzw/pytest-action@510c5e90c360a185039bea56ce8b3e7e51a16507   # v2.2.0
+      with:
+        click-to-expand: false
+        emoji: true
+        job-summary: true
+        verbose: false
+        custom-arguments: -v -ra
+        custom-pytest: PYTHONDEVMODE=1 pytest
+        report-title: Test Report
+
+  pypi-publish:
+    name: Upload release to PyPI
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    environment:
+      name: Release
+      url: https://pypi.org/p/nxmx
+    permissions:
+      id-token: write
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: artifact
+        path: dist
+    - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}

@@ -5,8 +5,9 @@ import datetime
 import logging
 import operator
 from collections import abc, namedtuple
+from collections.abc import Iterable, Iterator, Sequence
 from functools import cached_property, reduce
-from typing import Iterable, Iterator, Sequence, Union, overload
+from typing import Union, overload
 
 import dateutil.parser
 import h5py
@@ -266,7 +267,6 @@ class NXdata(H5Mapping):
         if "data_scale_factor" in self._handle:
             return self._handle["data_scale_factor"][()]
 
-
     @cached_property
     def data_offset(self) -> str | None:
         """
@@ -276,7 +276,6 @@ class NXdata(H5Mapping):
         """
         if "data_offset" in self._handle:
             return self._handle["data_offset"][()]
-
 
 
 class NXtransformations(H5Mapping):
@@ -1162,12 +1161,10 @@ class DependencyChain(Sequence[NXtransformationsAxis]):
         return iter(self.transformations)
 
     @overload
-    def __getitem__(self, idx: int) -> NXtransformationsAxis:
-        ...
+    def __getitem__(self, idx: int) -> NXtransformationsAxis: ...
 
     @overload
-    def __getitem__(self, idx: slice) -> Sequence[NXtransformationsAxis]:
-        ...
+    def __getitem__(self, idx: slice) -> Sequence[NXtransformationsAxis]: ...
 
     def __getitem__(self, idx):
         return self.transformations[idx]
