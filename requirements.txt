@@ -13,7 +13,7 @@ numpy==1.26.4
     #   nxmx (pyproject.toml)
     #   h5py
     #   scipy
-pint==0.24.3
+pint==0.24.4
     # via nxmx (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via nxmx (pyproject.toml)
