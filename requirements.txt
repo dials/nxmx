@@ -4,7 +4,7 @@ appdirs==1.4.4
     # via pint
 flexcache==0.3
     # via pint
-flexparser==0.3.1
+flexparser==0.4
     # via pint
 h5py==3.12.1
     # via nxmx (pyproject.toml)
