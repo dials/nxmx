@@ -4,7 +4,7 @@ requires = ["setuptools>=61", "setuptools-scm"]
 
 [project]
 classifiers = ["Programming Language :: Python :: 3"]
-dependencies = ["h5py", "pint", "python-dateutil", "scipy", "numpy <2"]
+dependencies = ["h5py", "pint", "python-dateutil", "scipy", "numpy <3"]
 description = "Read HDF5 data conforming to the NXmx application definition of the NeXus format"
 dynamic = ["version"]
 keywords = ["NeXus", "NXmx"]
