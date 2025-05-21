@@ -14,7 +14,7 @@ keywords = ["NeXus", "NXmx"]
 license = {text = "BSD 3-Clause License"}
 name = "nxmx"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 
 [tool.ruff.lint]
 ignore = ["E501"]
