@@ -3,10 +3,18 @@ ci:
 
 repos:
 
+- repo: https://github.com/astral-sh/uv-pre-commit
+  rev: 0.7.6
+  hooks:
+  - id: pip-compile
+    args: [pyproject.toml, -o, requirements.txt]
+  - id: pip-compile
+    args: [-o, requirements_dev.txt, --group, dev, --no-deps]
+
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.11.10
   hooks:
-  - id: ruff
+  - id: ruff-check
     args: [--fix, --show-fixes, --exit-non-zero-on-fix]
   - id: ruff-format
 
