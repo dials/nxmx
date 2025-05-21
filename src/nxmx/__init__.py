@@ -7,7 +7,7 @@ import operator
 from collections import abc, namedtuple
 from collections.abc import Iterable, Iterator, Sequence
 from functools import cached_property, reduce
-from typing import Union, overload
+from typing import TypeAlias, overload
 
 import dateutil.parser
 import h5py
@@ -17,10 +17,10 @@ from scipy.spatial.transform import Rotation
 
 # NeXus field type for type annotations
 # https://manual.nexusformat.org/nxdl-types.html#nxdl-field-types-and-units
-NXBoolT = Union[bool, np.ndarray]
-NXFloatT = Union[float, np.ndarray]
-NXIntT = Union[int, np.ndarray]
-NXNumberT = Union[NXFloatT, NXIntT]
+NXBoolT: TypeAlias = bool | np.ndarray
+NXFloatT: TypeAlias = float | np.ndarray
+NXIntT: TypeAlias = int | np.ndarray
+NXNumberT: TypeAlias = NXFloatT | NXIntT
 
 
 ureg = pint.UnitRegistry()
@@ -29,7 +29,7 @@ ureg = pint.UnitRegistry()
 logger = logging.getLogger(__name__)
 
 
-NXNode = Union[h5py.File, h5py.Group]
+NXNode: TypeAlias = h5py.File | h5py.Group
 
 
 class NXNumber(abc.Sequence):
@@ -54,7 +54,7 @@ def h5str(h5_value: str | np.bytes_ | bytes | None) -> str | None:
     for attribute values depending on whether the value was written as
     fixed or variable length. This function collapses the two to str.
     """
-    if isinstance(h5_value, (np.bytes_, bytes)):
+    if isinstance(h5_value, np.bytes_ | bytes):
         return h5_value.decode("utf-8")
     return h5_value
 
