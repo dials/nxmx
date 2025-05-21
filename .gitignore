@@ -1,2 +1,6 @@
 /src/nxmx.egg-info/*
+.tox/
+.venv/
 /src/nxmx/_version.py
+build/
+dist/
