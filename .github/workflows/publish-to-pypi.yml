@@ -19,7 +19,7 @@ jobs:
       run: |
         python -mbuild
         pip install dist/*.whl
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         path: ./dist/*
   test:
@@ -30,7 +30,7 @@ jobs:
         python-version: ['3.9', '3.10', '3.11', '3.12']
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: artifact
         path: dist
