@@ -42,7 +42,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest dist/*.whl -r requirements.txt -r requirements_dev.txt pytest-md pytest-emoji
+        pip install pytest dist/*.whl pytest-cov pytest-md pytest-emoji
     - name: Run pytest
       uses: pavelzw/pytest-action@510c5e90c360a185039bea56ce8b3e7e51a16507   # v2.2.0
       with:
