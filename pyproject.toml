@@ -26,3 +26,7 @@ nxmx = ["py.typed"]
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
 write_to = "src/nxmx/_version.py"
+
+[tool.tox]
+env_list = ["3.11", "3.12", "3.13"]
+requires = ["tox>=4"]
