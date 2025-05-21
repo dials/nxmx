@@ -386,7 +386,7 @@ def detector_group():
 
         group.create_dataset(
             "group_names",
-            data=[np.string_(n) for n in ("DET", "DTL", "DTR", "DLL", "DLR")],
+            data=[np.bytes_(n) for n in ("DET", "DTL", "DTR", "DLL", "DLR")],
             dtype="S12",
         )
         group.create_dataset("group_index", data=np.array([1, 2, 3, 4, 5]))
