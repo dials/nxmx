@@ -21,7 +21,7 @@ scipy==1.13.1
     # via nxmx (pyproject.toml)
 six==1.16.0
     # via python-dateutil
-typing-extensions==4.12.2
+typing-extensions==4.13.2
     # via
     #   flexcache
     #   flexparser
