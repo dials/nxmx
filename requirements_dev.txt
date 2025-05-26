@@ -2,5 +2,5 @@
 #    uv pip compile -o requirements_dev.txt --group dev --no-deps
 pytest==8.3.3
     # via nxmx (pyproject.toml:dev)
-pytest-cov==5.0.0
+pytest-cov==6.1.1
     # via nxmx (pyproject.toml:dev)
