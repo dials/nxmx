@@ -54,7 +54,7 @@ def h5scalar(ds: h5py.Dataset):
     converting to scalars.
     """
     if ds.size != 1:
-        raise TypeError("only length-1 arrays can be converted to Python scalars")
+        raise ValueError("only length-1 arrays can be converted to Python scalars")
     arr = np.squeeze(ds[()])
     return arr.item()
 
