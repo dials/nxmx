@@ -46,6 +46,19 @@ class NXNumber(abc.Sequence):
         return len(self._handle)
 
 
+def h5scalar(ds: h5py.Dataset):
+    """Read a scalar value from an HDF5 dataset
+
+    Sometimes scalars are stored as a length-1 1D dataset instead of a proper
+    scalar. This function allows for that, since NumPy has got stricter about
+    converting to scalars.
+    """
+    if ds.size != 1:
+        raise ValueError("only length-1 arrays can be converted to Python scalars")
+    arr = np.squeeze(ds[()])
+    return arr.item()
+
+
 def h5str(h5_value: str | np.bytes_ | bytes | None) -> str | None:
     """
     Convert a value returned from an h5py attribute to str.
@@ -131,7 +144,7 @@ class NXmx(H5Mapping):
         self._entries = [
             entry
             for entry in find_class(handle, "NXentry")
-            if "definition" in entry and h5str(entry["definition"][()]) == "NXmx"
+            if "definition" in entry and h5str(h5scalar(entry["definition"])) == "NXmx"
         ]
 
     @cached_property
@@ -178,7 +191,7 @@ class NXentry(H5Mapping):
         should be provided in NXentry/NXinstrument/time_zone.
         """
         if "start_time" in self._handle:
-            return dateutil.parser.isoparse(h5str(self._handle["start_time"][()]))
+            return dateutil.parser.isoparse(h5str(h5scalar(self._handle["start_time"])))
 
     @cached_property
     def end_time(self) -> datetime.datetime | None:
@@ -192,7 +205,7 @@ class NXentry(H5Mapping):
         omitted.
         """
         if "end_time" in self._handle:
-            return dateutil.parser.isoparse(h5str(self._handle["end_time"][()]))
+            return dateutil.parser.isoparse(h5str(h5scalar(self._handle["end_time"])))
         return None
 
     @cached_property
@@ -206,13 +219,13 @@ class NXentry(H5Mapping):
         """
         if "end_time_estimated" in self._handle:
             return dateutil.parser.isoparse(
-                h5str(self._handle["end_time_estimated"][()])
+                h5str(h5scalar(self._handle["end_time_estimated"]))
             )
 
     @cached_property
     def definition(self) -> str:
         """NeXus NXDL schema to which this file conforms."""
-        return h5str(self._handle["definition"][()])
+        return h5str(h5scalar(self._handle["definition"]))
 
 
 class NXdata(H5Mapping):
@@ -265,7 +278,7 @@ class NXdata(H5Mapping):
         When omitted, the scaling factor is assumed to be 1.
         """
         if "data_scale_factor" in self._handle:
-            return self._handle["data_scale_factor"][()]
+            return h5scalar(self._handle["data_scale_factor"])
 
     @cached_property
     def data_offset(self) -> str | None:
@@ -275,7 +288,7 @@ class NXdata(H5Mapping):
         When omitted, the offset is assumed to be 0.
         """
         if "data_offset" in self._handle:
-            return self._handle["data_offset"][()]
+            return h5scalar(self._handle["data_offset"])
 
 
 class NXtransformations(H5Mapping):
@@ -547,13 +560,13 @@ class NXsample(H5Mapping):
     @cached_property
     def name(self) -> str:
         """Descriptive name of sample"""
-        return h5str(self._handle["name"][()])
+        return h5str(h5scalar(self._handle["name"]))
 
     @cached_property
     def depends_on(self) -> NXtransformationsAxis | None:
         """The axis on which the sample position depends"""
         if "depends_on" in self._handle:
-            depends_on = h5str(self._handle["depends_on"][()])
+            depends_on = h5str(h5scalar(self._handle["depends_on"]))
             if depends_on and depends_on != ".":
                 return NXtransformationsAxis(self._handle[depends_on])
         return None
@@ -562,7 +575,7 @@ class NXsample(H5Mapping):
     def temperature(self) -> pint.Quantity | None:
         """The temperature of the sample."""
         if temperature := self._handle.get("temperature"):
-            return temperature[()] * units(temperature)
+            return h5scalar(temperature) * units(temperature)
         return None
 
     @cached_property
@@ -636,7 +649,7 @@ class NXinstrument(H5Mapping):
         https://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Items/_diffrn_source.type.html
         is highly recommended.
         """
-        return h5str(self._handle["name"][()])
+        return h5str(h5scalar(self._handle["name"]))
 
     @cached_property
     def short_name(self) -> str:
@@ -791,7 +804,7 @@ class NXdetector(H5Mapping):
         derived from detector axis specifications.
         """
         if "distance_derived" in self._handle:
-            return bool(self._handle["distance_derived"][()])
+            return bool(h5scalar(self._handle["distance_derived"]))
         return None
 
     @cached_property
@@ -834,7 +847,7 @@ class NXdetector(H5Mapping):
         otherwise (optional).
         """
         if "pixel_mask_applied" in self._handle:
-            return bool(self._handle["pixel_mask_applied"][()])
+            return bool(h5scalar(self._handle["pixel_mask_applied"]))
         return None
 
     @cached_property
@@ -884,14 +897,14 @@ class NXdetector(H5Mapping):
     def bit_depth_readout(self) -> int | None:
         """How many bits the electronics record per pixel (recommended)."""
         if "bit_depth_readout" in self._handle:
-            return int(self._handle["bit_depth_readout"][()])
+            return int(h5scalar(self._handle["bit_depth_readout"]))
         return None
 
     @cached_property
     def bit_depth_image(self) -> int | None:
         """The number of bits per pixel saved to the image data."""
         if "bit_depth_image" in self._handle:
-            return int(self._handle["bit_depth_image"][()])
+            return int(h5scalar(self._handle["bit_depth_image"]))
         return None
 
     @cached_property
@@ -901,7 +914,7 @@ class NXdetector(H5Mapping):
         At times, radiation is not directly sensed by the detector. Rather, the detector
         might sense the output from some converter like a scintillator. This is the name
         of this converter material."""
-        return h5str(np.squeeze(self._handle["sensor_material"])[()])
+        return h5str(h5scalar(self._handle["sensor_material"]))
 
     @cached_property
     def sensor_thickness(self) -> pint.Quantity:
@@ -917,7 +930,7 @@ class NXdetector(H5Mapping):
         to the underload_value.
         """
         if "underload_value" in self._handle:
-            return int(self._handle["underload_value"][()].item())
+            return int(h5scalar(self._handle["underload_value"]))
         return None
 
     @cached_property
@@ -932,7 +945,7 @@ class NXdetector(H5Mapping):
         """
         if "saturation_value" in self._handle:
             try:
-                return int(self._handle["saturation_value"][()].item())
+                return int(h5scalar(self._handle["saturation_value"]))
             except TypeError as e:
                 logger.warning(f"Error extracting {self.path}/saturation_value: {e}")
         return None
@@ -1058,7 +1071,7 @@ class NXsource(H5Mapping):
         https://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Items/_diffrn_source.pdbx_synchrotron_site.html
         controlled vocabulary is highly recommended.
         """
-        return h5str(self._handle["name"][()])
+        return h5str(h5scalar(self._handle["name"]))
 
     @cached_property
     def short_name(self) -> str | None:
@@ -1149,7 +1162,7 @@ class NXbeam(H5Mapping):
         Any of these values: Gaussian | Airy | top-hat | rectangular
         """
         if "profile" in self._handle:
-            return h5str(self._handle["profile"][()])
+            return h5str(h5scalar(self._handle["profile"]))
         return None
 
 
