@@ -19,7 +19,7 @@ python-dateutil==2.9.0.post0
     # via nxmx (pyproject.toml)
 scipy==1.13.1
     # via nxmx (pyproject.toml)
-six==1.16.0
+six==1.17.0
     # via python-dateutil
 typing-extensions==4.12.2
     # via
