@@ -6,7 +6,7 @@ import logging
 import operator
 from collections import abc, namedtuple
 from collections.abc import Iterable, Iterator, Sequence
-from functools import cached_property, reduce
+from functools import cache, cached_property, reduce
 from typing import TypeAlias, overload
 
 import dateutil.parser
@@ -25,6 +25,11 @@ NXNumberT: TypeAlias = NXFloatT | NXIntT
 
 
 ureg = pint.UnitRegistry()
+
+# Targets of the fixed conversions below, parsed once.
+_MM = ureg.Unit("mm")
+_RAD = ureg.Unit("rad")
+_DEGREES = ureg.Unit("degrees")
 
 
 logger = logging.getLogger(__name__)
@@ -108,9 +113,21 @@ def h5str(h5_value: str | np.bytes_ | np.str_ | bytes | None) -> str | None:
     return h5_value
 
 
+@cache
+def _unit(name: str | None) -> pint.Unit:
+    """Look up a unit by name, remembering the answer.
+
+    A file draws its unit strings from the small set the NXmx application
+    definition allows, so the same few names are parsed over and over. A
+    :class:`pint.Unit` carries no per-quantity state, so one instance can be
+    shared by every caller that asks for that name.
+    """
+    return ureg.Unit(name)
+
+
 def units(data: h5py.Dataset, default: str | None = None) -> pint.Unit:
     """Extract the units attribute, if any, from an h5py data set."""
-    return ureg.Unit(h5str(data.attrs.get("units", default)))
+    return _unit(h5str(data.attrs.get("units", default)))
 
 
 def find_classes(node: NXNode, *nx_classes: str | None) -> tuple[list[h5py.Group], ...]:
@@ -522,7 +539,7 @@ class NXtransformationsAxis:
     def offset_units(self) -> pint.Unit:
         """Units of the offset. Values should be consistent with NX_LENGTH."""
         if "offset_units" in self._handle.attrs:
-            return ureg.Unit(h5str(self._handle.attrs["offset_units"]))
+            return _unit(h5str(self._handle.attrs["offset_units"]))
         # This shouldn't be the case, but DLS EIGER NeXus files include offset without
         # accompanying offset_units, so use units instead (which should strictly only
         # apply to vector, not offset).
@@ -558,9 +575,9 @@ class NXtransformationsAxis:
         values = self[()]
         if np.any(values):
             values = (
-                values.to("mm").magnitude
+                values.to(_MM).magnitude
                 if self.transformation_type == "translation"
-                else values.to("rad").magnitude
+                else values.to(_RAD).magnitude
             )
         else:
             values = values.magnitude
@@ -573,7 +590,7 @@ class NXtransformationsAxis:
             T = values[:, np.newaxis] * self.vector
 
         if self.offset is not None and np.any(self.offset):
-            T += self.offset.to("mm").magnitude
+            T += self.offset.to(_MM).magnitude
 
         A = np.repeat(np.identity(4).reshape((1, 4, 4)), values.size, axis=0)
         A[:, :3, :3] = R
@@ -1272,7 +1289,7 @@ def get_rotation_axes(dependency_chain: DependencyChain) -> Axes:
     for transformation in dependency_chain:
         if transformation.transformation_type != "rotation":
             continue
-        values = transformation[()].to("degrees").magnitude
+        values = transformation[()].to(_DEGREES).magnitude
         is_scan = len(values) > 1 and not np.all(values == values[0])
         axes.append(transformation.vector)
         angles.append(values[0])

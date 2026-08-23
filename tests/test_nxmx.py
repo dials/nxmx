@@ -399,3 +399,54 @@ def test_nxdetector_group(detector_group):
     assert list(group.group_names) == ["DET", "DTL", "DTR", "DLL", "DLR"]
     assert list(group.group_index) == [1, 2, 3, 4, 5]
     assert list(group.group_parent) == [-1, 1, 1, 1]
+
+
+def test_units_are_cached(nxmx_example):
+    """A unit string is parsed once, and its unit shared by everything that asks."""
+    beam = nxmx_example["/entry/instrument/beam"]
+    thickness = nxmx_example["/entry/instrument/detector/sensor_thickness"]
+
+    assert nxmx.units(beam["incident_wavelength"]) == nxmx.ureg.Unit("angstrom")
+    # Data sets carrying the same units attribute get the same unit object.
+    assert nxmx.units(beam["incident_beam_size"]) is nxmx.units(thickness)
+
+    before = nxmx._unit.cache_info()
+    nxmx.units(thickness)
+    after = nxmx._unit.cache_info()
+    assert (after.hits, after.misses) == (before.hits + 1, before.misses)
+
+
+def test_units_default(nxmx_example):
+    """A data set with no units attribute falls back on the default."""
+    beam_center_x = nxmx_example["/entry/instrument/detector/beam_center_x"]
+    assert "units" not in beam_center_x.attrs
+
+    assert nxmx.units(beam_center_x, "pixels") == nxmx.ureg.Unit("pixel")
+    with pytest.raises(TypeError):
+        nxmx.units(beam_center_x)
+
+
+def test_rotation_axis_angle_units():
+    """A rotation angle is reported in degrees and composed as radians."""
+    with h5py.File(" ", "w", **pytest.h5_in_memory) as f:
+        omega = f.create_dataset("omega", data=np.array([90.0]))
+        omega.attrs["depends_on"] = b"."
+        omega.attrs["transformation_type"] = b"rotation"
+        omega.attrs["units"] = b"deg"
+        omega.attrs["vector"] = np.array([0.0, 0.0, 1.0])
+        axis = nxmx.NXtransformationsAxis(omega)
+
+        assert nxmx.get_rotation_axes([axis]).angles == pytest.approx([90.0])
+
+        # A quarter turn about the z axis, i.e. the angle taken as radians.
+        assert axis.matrix.shape == (1, 4, 4)
+        assert axis.matrix[0] == pytest.approx(
+            np.array(
+                [
+                    [0.0, -1.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ]
+            )
+        )
