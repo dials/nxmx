@@ -698,8 +698,8 @@ class NXinstrument(H5Mapping):
         return self._handle.get("time_zone")
 
     @cached_property
-    def attenuators(self):
-        return self._attenuators
+    def attenuators(self) -> list[NXattenuator]:
+        return [NXattenuator(attenuator) for attenuator in self._attenuators]
 
     @cached_property
     def detector_groups(self) -> list[NXdetector_group]:
@@ -719,6 +719,15 @@ class NXinstrument(H5Mapping):
     def beams(self) -> list[NXbeam]:
         """Properties of the neutron or X-ray beam at a given location."""
         return [NXbeam(beam) for beam in self._beams]
+
+
+class NXattenuator(H5Mapping):
+    """An attenuator in the beam path."""
+
+    @cached_property
+    def transmission(self) -> NXFloatT:
+        """Fraction of the incident beam transmitted by the attenuator."""
+        return h5_maybe_scalar(self._handle["attenuator_transmission"])
 
 
 class NXdetector_group(H5Mapping):
