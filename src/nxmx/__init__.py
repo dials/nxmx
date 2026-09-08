@@ -727,7 +727,7 @@ class NXattenuator(H5Mapping):
     @cached_property
     def transmission(self) -> NXFloatT:
         """Fraction of the incident beam transmitted by the attenuator."""
-        return self._handle["attenuator_transmission"][()]
+        return h5_maybe_scalar(self._handle["attenuator_transmission"])
 
 
 class NXdetector_group(H5Mapping):
