@@ -698,7 +698,7 @@ class NXinstrument(H5Mapping):
         return self._handle.get("time_zone")
 
     @cached_property
-    def attenuators(self):
+    def attenuators(self) -> list[NXattenuator]:
         return [NXattenuator(attenuator) for attenuator in self._attenuators]
 
     @cached_property
