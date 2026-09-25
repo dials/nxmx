@@ -83,6 +83,10 @@ def test_nxmx(nxmx_example):
     assert beam.flux is None
     assert beam.total_flux == pint.Quantity(1e12, "Hz")
 
+    assert len(instrument.attenuators) == 1
+    assert isinstance(instrument.attenuators[0], nxmx.NXattenuator)
+    assert instrument.attenuators[0].transmission == 0.75
+
     assert len(instrument.detectors) == 1
     detector = instrument.detectors[0]
     assert detector.description == "Eiger 16M"
